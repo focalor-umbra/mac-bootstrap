@@ -1,0 +1,17 @@
+.DS_Store
+package-lock.json
+.github/
+.vscode
+
+# Secrets / machine-local — never track
+.credentials.json
+.npmrc
+.cloudflared/
+*.pem
+id_rsa*
+id_ed25519*
+*token*
+*secret*
+
+# Local dumps / machine state — never track
+backups/
