@@ -1,6 +1,6 @@
 [submodule "stow"]
 path = stow
-url = git@github.com:focalor-umbra/.DotFiles.git
+url = https://github.com/focalor-umbra/.DotFiles.git
 [submodule "nvim"]
 path = stow/nvim/.config/nvim
-url = git@github.com:focalor-umbra/nvim-config.git
+url = https://github.com/focalor-umbra/nvim-config.git
