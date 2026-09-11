@@ -70,12 +70,17 @@ post_install() {
     warn "config_rectangle() not available; skipping Rectangle config"
   fi
 
-  if mb_have_fn install_claude_plugins; then
-    mb_run_step "Install Claude Code plugins (mempalace, caveman)" install_claude_plugins
+  if mb_have_fn install_codex_plugins; then
+    mb_run_step "Install Codex plugins (mempalace, caveman)" install_codex_plugins
   else
-    warn "install_claude_plugins() not available; skipping Claude Code plugins"
+    warn "install_codex_plugins() not available; skipping Codex plugins"
   fi
 
+  if mb_have_fn configure_codex_rtk; then
+    mb_run_step "Configure RTK for Codex" configure_codex_rtk
+  else
+    warn "configure_codex_rtk() not available; skipping RTK integration"
+  fi
 
 
   success "Finished post install"

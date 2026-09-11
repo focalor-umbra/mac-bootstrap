@@ -47,10 +47,9 @@ Execution flow:
      - Node global packages (`scripts/node.sh`)
      - LuaRocks packages (`scripts/lua.sh`)
      - Go tools (`scripts/golang.sh`)
-    - Claude Code plugins (`scripts/claude-plugins.sh`)
      - Stow dotfiles (`scripts/stow.sh`)
      - macOS defaults (`scripts/osx-configs.sh`)
-     - Post-install steps (`scripts/post-install.sh`)
+     - Post-install steps, including Codex plugins and RTK (`scripts/post-install.sh`)
      - Optional restart
 
 ## Customization points
@@ -62,6 +61,10 @@ Edit **`scripts/brew.sh`**:
 - `formulas=(...)` (brew formulas)
 - `casks=(...)`
 - `services=(...)` (started via `brew services`)
+
+`Brewfile` is a separate manifest for `brew bundle`; the interactive installer uses
+`scripts/brew.sh`. Both include the Codex CLI cask (`codex`) and `jq`, which the
+plugin installer uses to read Codex's JSON output.
 
 Important behavior:
 - `install_packages()` installs what’s listed.
@@ -102,7 +105,8 @@ See **`scripts/post-install.sh`**. It includes (among other items):
 - installing Sketchybar extras (SbarLua via a temp clone + `make install`)
 - running Homebrew cleanup and starting configured services
 - applying Rectangle defaults
-- installing Claude Code plugins (`mempalace`, `caveman`)
+- installing Codex plugins (`mempalace`, `caveman`)
+- configuring RTK for Codex (`rtk init -g --codex`)
 - starting Yabai as a service
 
 ## Running a single module
@@ -126,10 +130,54 @@ Examples:
   zsh -lc 'source scripts/utils.sh; source scripts/osx-configs.sh; setup_osx'
   ```
 
-- Claude Code plugins only:
+- Codex plugins only:
   ```sh
-  zsh -lc 'source scripts/utils.sh; source scripts/claude-plugins.sh; install_claude_plugins'
+  zsh -lc 'source scripts/utils.sh; source scripts/codex-plugins.sh; install_codex_plugins'
   ```
+
+- RTK integration for Codex only:
+  ```sh
+  zsh -lc 'source scripts/utils.sh; source scripts/rtk.sh; configure_codex_rtk'
+  ```
+
+## Start using Codex
+
+To set up only Codex on an existing machine, without running the full bootstrap:
+
+```sh
+brew install --cask codex
+brew install jq rtk
+zsh -lc 'source scripts/utils.sh; source scripts/codex-plugins.sh; install_codex_plugins'
+zsh -lc 'source scripts/utils.sh; source scripts/rtk.sh; configure_codex_rtk'
+codex
+```
+
+Sign in when prompted on the first launch, or run `codex login` beforehand.
+The plugin step registers `MemPalace/mempalace` and `JuliusBrussee/caveman`, then
+installs `mempalace@mempalace` and `caveman@caveman` with `codex plugin add`.
+It skips already installed plugins, preserving their enabled/disabled state;
+use `/plugins` in Codex to review them. Start a new session after installing plugins.
+See the official [Codex CLI guide](https://learn.chatgpt.com/docs/codex/cli) and
+[plugin guide](https://learn.chatgpt.com/docs/plugins).
+
+RTK is already included in both Homebrew package lists. Its
+[Codex integration](https://github.com/rtk-ai/rtk#supported-ai-tools) uses
+`rtk init -g --codex` to write `~/.codex/RTK.md` and add a reference in
+`~/.codex/AGENTS.md`, preserving existing instructions. It guides Codex to call
+RTK explicitly; it is not a marketplace plugin or automatic shell rewrite hook.
+Do not omit `--codex`, because RTK's default integration targets Claude Code.
+
+Use a current Codex CLI with `codex plugin add` support. If the setup reports an
+older CLI, run `brew upgrade --cask codex` and retry. This bootstrap does not copy
+Claude settings or credentials into Codex, and does not overwrite your Codex config.
+Existing Claude installations and data are left alone by the Codex setup step;
+the optional Homebrew cleanup can remove casks absent from the desired package list.
+
+## Validate Codex setup changes
+
+Run `zsh tests/codex-setup.zsh`. The checks mock external commands and cover fresh
+installs, repeat runs, exact plugin matching, failure handling, RTK's Codex target,
+and preservation of Codex/RTK dependencies during Homebrew cleanup.
 
 ## Safety warnings (read before running)
 

@@ -15,7 +15,8 @@ cd "$SCRIPT_DIR/.."
 . scripts/node.sh
 . scripts/golang.sh
 . scripts/lua.sh
-. scripts/claude-plugins.sh
+. scripts/codex-plugins.sh
+. scripts/rtk.sh
 . scripts/stow.sh
 . scripts/post-install.sh
 . scripts/rectangle.sh

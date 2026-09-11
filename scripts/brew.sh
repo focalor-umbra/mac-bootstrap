@@ -49,6 +49,7 @@ formulas=(
   gradle-completion
   helm
   istioctl
+  jq
   derailed/k9s/k9s
   kubernetes-cli
   lazygit
@@ -103,6 +104,7 @@ required_casks=(
 
 casks=(
   bitwarden
+  codex
   copilot-cli
   dotnet-sdk
   font-fira-code-nerd-font
