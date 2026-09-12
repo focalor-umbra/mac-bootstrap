@@ -25,4 +25,16 @@ command -v mempalace >/dev/null || pipx install mempalace
 
 mempalace init || true
 
+zsh -c '
+  set -euo pipefail
+  cd "$1"
+  source scripts/utils.sh
+  source scripts/codex-plugins.sh
+  source scripts/rtk.sh
+  source scripts/codex-config.sh
+  install_codex_plugins
+  configure_codex_rtk
+  configure_codex
+' _ "$REPO_DIR"
+
 echo "bootstrap complete"

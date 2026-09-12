@@ -82,6 +82,11 @@ post_install() {
     warn "configure_codex_rtk() not available; skipping RTK integration"
   fi
 
+  if mb_have_fn configure_codex; then
+    mb_run_step "Configure Codex working agreements and Obsidian vault" configure_codex
+  else
+    warn "configure_codex() not available; skipping Codex working agreements"
+  fi
 
   success "Finished post install"
 }

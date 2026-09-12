@@ -15,3 +15,6 @@ id_ed25519*
 
 # Local dumps / machine state — never track
 backups/
+# Local agent guidance and validation are not bootstrap configuration.
+/AGENTS.md
+/tests/

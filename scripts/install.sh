@@ -16,6 +16,7 @@ cd "$SCRIPT_DIR/.."
 . scripts/golang.sh
 . scripts/lua.sh
 . scripts/codex-plugins.sh
+. scripts/codex-config.sh
 . scripts/rtk.sh
 . scripts/stow.sh
 . scripts/post-install.sh

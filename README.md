@@ -107,6 +107,7 @@ See **`scripts/post-install.sh`**. It includes (among other items):
 - applying Rectangle defaults
 - installing Codex plugins (`mempalace`, `caveman`)
 - configuring RTK for Codex (`rtk init -g --codex`)
+- installing shared Codex working agreements and resolving this machine's Obsidian vault
 - starting Yabai as a service
 
 ## Running a single module
@@ -149,6 +150,7 @@ brew install --cask codex
 brew install jq rtk
 zsh -lc 'source scripts/utils.sh; source scripts/codex-plugins.sh; install_codex_plugins'
 zsh -lc 'source scripts/utils.sh; source scripts/rtk.sh; configure_codex_rtk'
+zsh scripts/codex-config.sh
 codex
 ```
 
@@ -169,15 +171,56 @@ Do not omit `--codex`, because RTK's default integration targets Claude Code.
 
 Use a current Codex CLI with `codex plugin add` support. If the setup reports an
 older CLI, run `brew upgrade --cask codex` and retry. This bootstrap does not copy
-Claude settings or credentials into Codex, and does not overwrite your Codex config.
+Claude settings or credentials into Codex, and does not overwrite `config.toml`.
 Existing Claude installations and data are left alone by the Codex setup step;
 the optional Homebrew cleanup can remove casks absent from the desired package list.
 
-## Validate Codex setup changes
+## Replicate Codex Across Machines
 
-Run `zsh tests/codex-setup.zsh`. The checks mock external commands and cover fresh
-installs, repeat runs, exact plugin matching, failure handling, RTK's Codex target,
-and preservation of Codex/RTK dependencies during Homebrew cleanup.
+Shared behavior lives in [`config/codex/AGENTS.md`](config/codex/AGENTS.md). Both
+bootstrap entrypoints install it into a marked section of the global Codex
+`AGENTS.md`. Existing personal instructions and RTK references are preserved;
+changed files get timestamped backups and unchanged reruns write nothing.
+Codex loads global instructions in each new task/session, alongside repository
+instructions. See [instruction discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+
+The agreements require Codex to consult the relevant Obsidian project notes before
+changes, follow the vault's documentation standards, verify claims against code,
+and update affected documentation before completing the task. Project notes are
+located through the vault index or a targeted search by repository name or remote.
+Private project mappings stay in the vault or machine-local configuration.
+
+On each Mac:
+
+1. Clone this repo and initialize its submodules.
+2. Sign in to Obsidian Sync, sync the project documentation vault, and open it once
+   in Obsidian so the local vault registry exists.
+3. Run the bootstrap, or just the instruction setup:
+   ```sh
+   zsh scripts/codex-config.sh --dry-run
+   zsh scripts/codex-config.sh
+   ```
+4. Sign in to Codex separately and start a new task. Ask it to identify the active
+   working agreements, locate the project's vault notes, and summarize the relevant
+   documentation before editing. Check its cited paths.
+
+The setup detects a single registered vault and saves its path in
+`~/.codex/obsidian-vault.json`. If there are multiple vaults, or the path changes,
+select it with `zsh scripts/codex-config.sh --vault "/path/to/SecondBrain"`.
+For the full bootstrap, set `MB_OBSIDIAN_VAULT` to that path. An existing `CODEX_HOME`
+is respected. Missing/unsynced documentation, a nonempty global `AGENTS.override.md`,
+or symlinked destination files are reported before instructions are changed.
+
+Vault files are ordinary Markdown, so this workflow does not require an Obsidian
+plugin or CLI. The vault stays in Obsidian Sync; only the reusable instructions
+are versioned here. Authentication, model choices, permissions, sessions, caches,
+and plugin state remain local. Shared instructions give consistent working rules;
+they do not guarantee identical model output or transfer conversation history.
+
+Instructions do not grant filesystem access. For CLI work that updates vault notes,
+include the vault with `codex --add-dir "/path/to/SecondBrain"`; in the desktop app,
+grant access to the affected vault files when requested. Keep existing sandbox
+settings. If access is blocked, Codex must report the pending documentation update.
 
 ## Safety warnings (read before running)
 
