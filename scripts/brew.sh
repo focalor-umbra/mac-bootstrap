@@ -65,7 +65,6 @@ formulas=(
   node
   nss
   nushell
-  opencode
   openjdk
   openjdk@17
   openssl
